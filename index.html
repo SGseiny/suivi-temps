@@ -414,7 +414,11 @@ function renderMain(){
     <div class="card">
       <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
         <span>Mes temps saisis</span>
-        <span id="exportButtons" style="display:flex;gap:8px;">
+        <span id="exportButtons" style="display:flex;gap:8px;align-items:center;">
+          <select id="filterProject" style="margin-bottom:0;width:auto;min-width:160px;">
+            <option value="all">Tous les projets</option>
+            ${projectNames.map(p=>`<option value="${p}">${p}</option>`).join('')}
+          </select>
           <button class="secondary" id="exportCsv">Export CSV</button>
           <button class="secondary" id="exportXls">Export Excel</button>
           <button class="secondary" id="exportJson">Export JSON</button>
@@ -428,6 +432,7 @@ function renderMain(){
   document.getElementById('logoutBtn').onclick = logout;
   document.getElementById('project').onchange = updatePhases;
   document.getElementById('addBtn').onclick = addEntry;
+  document.getElementById('filterProject').onchange = renderTable;
   document.getElementById('exportCsv').onclick = exportCSV;
   document.getElementById('exportXls').onclick = exportXLS;
   document.getElementById('exportJson').onclick = exportJSON;
@@ -452,7 +457,7 @@ function buildHeaders(){
 }
 
 function buildRows(){
-  return [...entries]
+  return [...getFilteredEntries()]
     .sort((a,b) => b.week.localeCompare(a.week))
     .map(e => [e.week, e.project, e.phase, e.hours, e.comment || '']);
 }
@@ -533,17 +538,24 @@ function deleteEntry(id){
   renderTable();
 }
 
+function getFilteredEntries(){
+  const filterEl = document.getElementById('filterProject');
+  const filter = filterEl ? filterEl.value : 'all';
+  return filter === 'all' ? entries : entries.filter(e => e.project === filter);
+}
+
 function renderTable(){
   const zone = document.getElementById('tableZone');
   const exportBtns = ['exportCsv','exportXls','exportJson'].map(id => document.getElementById(id));
-  if(entries.length === 0){
-    zone.innerHTML = `<div class="empty">Aucune saisie enregistrée pour le moment.</div>`;
+  const filtered = getFilteredEntries();
+  if(filtered.length === 0){
+    zone.innerHTML = `<div class="empty">${entries.length === 0 ? "Aucune saisie enregistrée pour le moment." : "Aucune saisie pour ce projet."}</div>`;
     exportBtns.forEach(b => { if(b) b.disabled = true; b.style.opacity = '.5'; });
     return;
   }
   exportBtns.forEach(b => { if(b) b.disabled = false; b.style.opacity = '1'; });
-  const sorted = [...entries].sort((a,b) => b.week.localeCompare(a.week));
-  const total = entries.reduce((s,e)=>s+e.hours,0);
+  const sorted = [...filtered].sort((a,b) => b.week.localeCompare(a.week));
+  const total = filtered.reduce((s,e)=>s+e.hours,0);
   zone.innerHTML = `
     <table>
       <thead>
