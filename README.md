@@ -1,57 +1,60 @@
 # Suivi des temps par projet/phase
 
-Application web de saisie et de consultation des temps passés par projet et par phase, réalisée dans le cadre d'un exercice technique d'entrée en alternance.
+Application web permettant à un utilisateur authentifié de saisir et consulter le temps passé sur différentes phases de différents projets, semaine par semaine.
 
-## 1. Compréhension du besoin
+## Fonctionnalités
 
-Le besoin exprimé se résume à 4 fonctionnalités :
-1. Authentification d'un utilisateur (identifiant + mot de passe)
-2. Saisie du temps passé sur une phase d'un projet donné, pour une semaine choisie
-3. Sauvegarde persistante de cette saisie
-4. Consultation des temps déjà saisis par l'utilisateur connecté
+- Authentification par identifiant et mot de passe
+- Saisie du temps passé pour une semaine, un projet et une phase donnés
+- Sauvegarde automatique des saisies
+- Consultation de l'historique des temps saisis, avec total d'heures
+- Export de l'historique en CSV, Excel et JSON
+- Suppression d'une saisie
 
-Contraintes imposées : pas de base de données obligatoire, deux comptes et la liste des projets/phases codés en dur, accessible depuis un navigateur, sans contrainte de design poussé.
+## Stack technique
 
-## 2. Choix méthodologiques et techniques
+HTML / CSS / JavaScript natif, sans framework ni dépendance externe. Le stockage des données s'appuie sur le `localStorage` du navigateur, ce qui permet un déploiement entièrement statique (aucun serveur applicatif ni base de données requis).
 
-| Choix | Justification |
+## Choix de conception
+
+**Pas de framework.** Le périmètre fonctionnel (authentification simple, formulaire, tableau) ne justifie pas l'ajout d'une couche de build ou d'une librairie front. Un seul fichier HTML autoporté simplifie le déploiement et la lecture du code.
+
+**Comptes et référentiels en dur.** Les identifiants utilisateurs ainsi que la liste des projets et de leurs phases sont définis directement dans le code (`USERS` et `PROJECTS`). C'est un choix volontaire pour un périmètre limité ; une montée en charge nécessiterait de déporter ces données vers un backend avec gestion des utilisateurs et des référentiels projets dynamiques.
+
+**Mots de passe hachés (SHA-256).** Les mots de passe ne sont jamais stockés en clair dans le code source : seule leur empreinte SHA-256 y figure, calculée et comparée côté navigateur via l'API Web Crypto. Cela évite l'exposition directe du mot de passe en clair, sans toutefois constituer une sécurité de niveau production (un hash sans salage reste vulnérable à une attaque par dictionnaire). Une vraie protection nécessiterait une authentification côté serveur avec salage, hash robuste (bcrypt/argon2) et gestion de session.
+
+**Export multi-format.** L'historique des temps saisis peut être exporté en CSV, Excel (.xls) et JSON directement depuis l'interface, pour faciliter la réutilisation des données dans un outil de reporting externe.
+
+**Stockage local.** `localStorage` joue le rôle de couche de persistance légère, propre à chaque navigateur. C'est suffisant pour une démonstration ou un usage individuel, mais ne permet pas de partager les données entre plusieurs postes ou utilisateurs simultanés.
+
+## Limites connues
+
+- Les données sont propres au navigateur utilisé ; pas de synchronisation multi-appareils.
+- L'authentification n'est pas sécurisée au sens production (pas de hash des mots de passe, pas de session serveur) : adaptée à une démonstration, pas à un usage réel avec données sensibles.
+- Pas de gestion multi-utilisateurs centralisée (chaque utilisateur ne voit que ses propres saisies, stockées localement).
+
+## Comptes de test
+
+| Identifiant | Mot de passe |
 |---|---|
-| HTML/CSS/JavaScript natif (aucun framework) | Exercice court (quelques heures), pas besoin d'un build tool ni d'une stack lourde pour 4 fonctionnalités. Réduit aussi la dépendance à des bibliothèques externes pour un hébergement statique simple. |
-| Authentification codée en dur (`USERS`) | Conforme à la consigne ; dans une vraie mise en production, ce mécanisme serait remplacé par une authentification serveur avec mots de passe hashés (jamais en clair côté client). |
-| Projets/phases codés en dur (`PROJECTS`) | Conforme à la consigne ; structure en objet JS facilement éditable pour ajouter un projet ou une phase sans toucher au reste du code. |
-| Persistance via `localStorage` | Remplace la base de données par un mécanisme de sauvegarde fichier-like, propre au navigateur du poste utilisé. Choix assumé : permet un hébergement 100% statique (GitHub Pages) sans backend, conformément à l'esprit "sauvegarde dans un fichier quelconque" de la consigne. |
-| Un fichier HTML unique | Facilite le déploiement statique et la lecture du code dans le cadre de cet exercice ; sur un projet réel de plus grande taille, le code serait scindé (composants, modules JS séparés). |
+| pbellugue | admin |
+| mwitman | admin |
 
-## 3. Limites connues (assumées, par souci de transparence)
+## Utilisation
 
-- Les données sont stockées **par navigateur**, pas sur un serveur central : si le recruteur teste depuis deux navigateurs différents, les saisies ne sont pas partagées entre les deux.
-- L'authentification n'est pas sécurisée (mots de passe visibles dans le code source) : acceptable uniquement dans le cadre de cet exercice de démonstration, jamais en production.
-- Pas de gestion multi-appareil ni de synchronisation : hors périmètre de l'exercice demandé.
+1. Cloner le repository
+2. Ouvrir `index.html` dans un navigateur (aucune installation requise)
+3. Se connecter avec l'un des comptes ci-dessus
+4. Sélectionner une semaine, un projet et une phase, saisir le nombre d'heures, valider
+5. Consulter l'historique des saisies dans le tableau en bas de page
 
-## 4. Utilisation
+## Déploiement
 
-Comptes de test :
-- `asali` / `alt2026`
-- `jdupont` / `alt2026`
+Le projet est hébergé en statique via GitHub Pages, branche `main`, dossier racine.
 
-1. Se connecter avec l'un des deux comptes
-2. Choisir une semaine, un projet, une phase, saisir le nombre d'heures, valider
-3. Les saisies apparaissent immédiatement dans le tableau du bas, avec le total d'heures
-4. Possibilité de supprimer une ligne saisie par erreur
+## Évolutions possibles
 
-## 5. Lancer le projet en local
-
-Aucune dépendance ni installation nécessaire :
-1. Cloner le repo
-2. Ouvrir `index.html` directement dans un navigateur (double-clic, ou clic droit > "Ouvrir avec")
-
-## 6. Déploiement
-
-Hébergé en statique via GitHub Pages : Settings > Pages > branche `main` > dossier `/root`.
-
-## 7. Pistes d'évolution si le projet devait grossir
-
-- Remplacer `localStorage` par un vrai backend (API REST + base de données) pour une persistance partagée entre utilisateurs et appareils
-- Authentification sécurisée côté serveur (hash des mots de passe, sessions/JWT)
-- Export des temps saisis en CSV/Excel pour reporting
-- Vue "manager" consolidant les temps de plusieurs collaborateurs par projet
+- Backend avec base de données pour une persistance partagée entre utilisateurs et appareils
+- Authentification sécurisée (hash des mots de passe, gestion de sessions)
+- Export des temps saisis (CSV, Excel)
+- Vue consolidée multi-utilisateurs pour un rôle manager/chef de projet

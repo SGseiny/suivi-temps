@@ -1,106 +1,339 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-<meta charset="UTF-8">
-<title>Suivi des temps</title>
-<style>
-  :root{
-    --bg:#f4f6f8; --card:#ffffff; --primary:#2c5f6f; --primary-dark:#1f4750;
-    --accent:#e8b94a; --text:#243036; --muted:#6b7c85; --border:#e1e7ea;
-    --danger:#c0504d; --radius:10px;
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    background:var(--bg); color:var(--text); min-height:100vh;
-  }
-  .wrap{max-width:920px;margin:0 auto;padding:32px 20px;}
-  h1{font-size:1.5rem;margin:0 0 4px;color:var(--primary-dark);}
-  .subtitle{color:var(--muted);font-size:.9rem;margin-bottom:24px;}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
-  label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:6px;font-weight:600;}
-  input,select{
-    width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;
-    font-size:.95rem;margin-bottom:16px;background:#fff;color:var(--text);
-  }
-  input:focus,select:focus{outline:none;border-color:var(--primary);}
-  button{
-    background:var(--primary);color:#fff;border:none;padding:11px 22px;border-radius:8px;
-    font-size:.95rem;font-weight:600;cursor:pointer;transition:background .15s;
-  }
-  button:hover{background:var(--primary-dark);}
-  button.secondary{background:transparent;color:var(--primary);border:1px solid var(--primary);}
-  button.secondary:hover{background:#eef4f5;}
-  .row{display:flex;gap:16px;}
-  .row > div{flex:1;}
-  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
-  .userpill{background:var(--primary);color:#fff;padding:6px 14px;border-radius:20px;font-size:.85rem;}
-  table{width:100%;border-collapse:collapse;font-size:.9rem;}
-  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--border);}
-  th{color:var(--muted);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.03em;}
-  tr:hover td{background:#fafcfc;}
-  .empty{color:var(--muted);text-align:center;padding:24px;font-size:.9rem;}
-  .total{margin-top:14px;text-align:right;font-weight:700;color:var(--primary-dark);}
-  .error{color:var(--danger);font-size:.85rem;margin:-10px 0 14px;}
-  .login-box{max-width:380px;margin:80px auto 0;}
-  .login-box h1{text-align:center;}
-  .login-box .subtitle{text-align:center;}
-  .del-btn{background:none;border:none;color:var(--danger);cursor:pointer;font-size:.85rem;padding:2px 6px;}
-  .del-btn:hover{text-decoration:underline;}
-  .section-title{font-size:1.05rem;font-weight:700;margin:0 0 16px;color:var(--primary-dark);}
-  footer{text-align:center;color:var(--muted);font-size:.75rem;margin-top:30px;}
-</style>
+    <meta charset="UTF-8">
+    <title>Suivi des temps</title>
+    <style>
+         :root {
+            --bg: #f7f3f6;
+            --card: #ffffff;
+            --violet: #5b2a86;
+            --violet-dark: #421f63;
+            --rose: #c8447a;
+            --orange: #e8772e;
+            --gradient: linear-gradient(120deg, var(--violet) 0%, var(--rose) 55%, var(--orange) 100%);
+            --primary: var(--violet);
+            --primary-dark: var(--violet-dark);
+            --accent: var(--orange);
+            --text: #2c2230;
+            --muted: #7c6b7a;
+            --border: #ecdfe8;
+            --danger: #c0504d;
+            --radius: 10px;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        .wrap {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 32px 20px;
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            margin: 0 0 4px;
+            color: var(--violet-dark);
+        }
+        
+        .subtitle {
+            color: var(--muted);
+            font-size: .9rem;
+            margin-bottom: 24px;
+        }
+        
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(91, 42, 134, .06);
+        }
+        
+        label {
+            display: block;
+            font-size: .85rem;
+            color: var(--muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        
+        input,
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: .95rem;
+            margin-bottom: 16px;
+            background: #fff;
+            color: var(--text);
+        }
+        
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--rose);
+            box-shadow: 0 0 0 3px rgba(200, 68, 122, .12);
+        }
+        
+        button {
+            background: var(--gradient);
+            color: #fff;
+            border: none;
+            padding: 11px 22px;
+            border-radius: 8px;
+            font-size: .95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity .15s, transform .1s;
+        }
+        
+        button:hover {
+            opacity: .92;
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        button.secondary {
+            background: transparent;
+            color: var(--violet);
+            border: 1px solid var(--violet);
+        }
+        
+        button.secondary:hover {
+            background: #f4ecf7;
+            opacity: 1;
+        }
+        
+        .row {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .row>div {
+            flex: 1;
+        }
+        
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            background: var(--gradient);
+            padding: 18px 22px;
+            border-radius: var(--radius);
+            color: #fff;
+        }
+        
+        .topbar h1 {
+            color: #fff;
+        }
+        
+        .topbar .subtitle {
+            color: rgba(255, 255, 255, .85);
+            margin-bottom: 0;
+        }
+        
+        .userpill {
+            background: rgba(255, 255, 255, .22);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: .85rem;
+            border: 1px solid rgba(255, 255, 255, .4);
+        }
+        
+        .topbar button.secondary {
+            color: #fff;
+            border-color: rgba(255, 255, 255, .6);
+        }
+        
+        .topbar button.secondary:hover {
+            background: rgba(255, 255, 255, .15);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .9rem;
+        }
+        
+        th,
+        td {
+            text-align: left;
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            color: var(--muted);
+            font-weight: 600;
+            font-size: .8rem;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+        }
+        
+        tr:hover td {
+            background: #faf5f8;
+        }
+        
+        .empty {
+            color: var(--muted);
+            text-align: center;
+            padding: 24px;
+            font-size: .9rem;
+        }
+        
+        .total {
+            margin-top: 14px;
+            text-align: right;
+            font-weight: 700;
+            color: var(--violet-dark);
+        }
+        
+        .error {
+            color: var(--danger);
+            font-size: .85rem;
+            margin: -10px 0 14px;
+        }
+        
+        .login-box {
+            max-width: 380px;
+            margin: 80px auto 0;
+            border-top: 4px solid transparent;
+            border-image: var(--gradient) 1;
+        }
+        
+        .login-box h1 {
+            text-align: center;
+        }
+        
+        .login-box .subtitle {
+            text-align: center;
+        }
+        
+        .del-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: .85rem;
+            padding: 2px 6px;
+        }
+        
+        .del-btn:hover {
+            text-decoration: underline;
+        }
+        
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 0 0 16px;
+            color: var(--violet-dark);
+            border-left: 4px solid var(--orange);
+            padding-left: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: .75rem;
+            margin-top: 30px;
+        }
+        
+        .brandbar {
+            height: 5px;
+            background: var(--gradient);
+            border-radius: 4px;
+            margin-bottom: 24px;
+        }
+    </style>
 </head>
+
 <body>
-<div class="wrap" id="app"></div>
+    <div class="wrap" id="app"></div>
 
-<script>
-// ---------- Données codées en dur ----------
-const USERS = {
-  "asali": { password: "alt2026", label: "Sali A." },
-  "jdupont": { password: "alt2026", label: "J. Dupont" }
-};
+    <script>
+        // ---------- Données codées en dur ----------
+        // Les mots de passe ne sont jamais stockés en clair : seul leur empreinte SHA-256 figure ici.
+        // Remarque : pour une application statique sans backend, ceci limite l'exposition directe du
+        // mot de passe en clair dans le code source, mais ne constitue pas une sécurité de niveau
+        // production (un hash simple reste vulnérable à une attaque par dictionnaire/rainbow table).
+        // Une vraie protection nécessiterait une authentification côté serveur (salage + hash + session).
+        const USERS = {
+            "pbellugue": {
+                passwordHash: "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+                label: "Pascal Bellugue"
+            },
+            "mwitman": {
+                passwordHash: "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+                label: "Marc Witman"
+            }
+        };
 
-const PROJECTS = {
-  "Projet Atlas": ["Cadrage", "Conception", "Développement", "Tests", "Recette"],
-  "Projet Mercure": ["Analyse besoins", "Développement", "Déploiement"],
-  "Projet Helios": ["Conception", "Développement", "Documentation", "Support"]
-};
+        async function sha256(message) {
+            const data = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
 
-let currentUser = null;
-let entries = [];
+        const PROJECTS = {
+            "Projet Atlas": ["Cadrage", "Conception", "Développement", "Tests", "Recette"],
+            "Projet Mercure": ["Analyse besoins", "Développement", "Déploiement"],
+            "Projet Helios": ["Conception", "Développement", "Documentation", "Support"]
+        };
 
-const app = document.getElementById('app');
+        let currentUser = null;
+        let entries = [];
 
-function storageKey(user){ return `time_entries_${user}`; }
+        const app = document.getElementById('app');
 
-function loadEntries(user){
-  try{
-    const raw = localStorage.getItem(storageKey(user));
-    return raw ? JSON.parse(raw) : [];
-  }catch(e){
-    return [];
-  }
-}
+        function storageKey(user) {
+            return `time_entries_${user}`;
+        }
 
-function saveEntries(user, data){
-  try{
-    localStorage.setItem(storageKey(user), JSON.stringify(data));
-    return true;
-  }catch(e){
-    console.error('Erreur de sauvegarde', e);
-    return false;
-  }
-}
+        function loadEntries(user) {
+            try {
+                const raw = localStorage.getItem(storageKey(user));
+                return raw ? JSON.parse(raw) : [];
+            } catch (e) {
+                return [];
+            }
+        }
 
-function renderLogin(error){
-  app.innerHTML = `
+        function saveEntries(user, data) {
+            try {
+                localStorage.setItem(storageKey(user), JSON.stringify(data));
+                return true;
+            } catch (e) {
+                console.error('Erreur de sauvegarde', e);
+                return false;
+            }
+        }
+
+        function renderLogin(error) {
+            app.innerHTML = `
     <div class="login-box card">
       <h1>Suivi des temps</h1>
       <div class="subtitle">Connectez-vous pour saisir vos heures</div>
       ${error ? `<div class="error">${error}</div>` : ''}
       <label for="u">Identifiant</label>
-      <input id="u" type="text" autocomplete="username" placeholder="ex: asali">
+      <input id="u" type="text" autocomplete="username" placeholder="ex: pbellugue">
       <label for="p">Mot de passe</label>
       <input id="p" type="password" autocomplete="current-password" placeholder="••••••••">
       <button id="loginBtn" style="width:100%">Se connecter</button>
@@ -111,11 +344,15 @@ function renderLogin(error){
   document.getElementById('p').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 }
 
-function doLogin(){
+async function doLogin(){
   const u = document.getElementById('u').value.trim();
   const p = document.getElementById('p').value;
   const user = USERS[u];
-  if(user && user.password === p){
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = "Vérification...";
+  const hashed = await sha256(p);
+  btn.disabled = false; btn.textContent = "Se connecter";
+  if(user && user.passwordHash === hashed){
     currentUser = u;
     init();
   } else {
@@ -132,6 +369,7 @@ function logout(){
 function renderMain(){
   const projectNames = Object.keys(PROJECTS);
   app.innerHTML = `
+    <div class="brandbar"></div>
     <div class="topbar">
       <div>
         <h1 style="margin-bottom:0">Suivi des temps</h1>
@@ -174,7 +412,14 @@ function renderMain(){
     </div>
 
     <div class="card">
-      <div class="section-title">Mes temps saisis</div>
+      <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <span>Mes temps saisis</span>
+        <span id="exportButtons" style="display:flex;gap:8px;">
+          <button class="secondary" id="exportCsv">Export CSV</button>
+          <button class="secondary" id="exportXls">Export Excel</button>
+          <button class="secondary" id="exportJson">Export JSON</button>
+        </span>
+      </div>
       <div id="tableZone"></div>
     </div>
     <footer>Données stockées localement dans ce navigateur (localStorage)</footer>
@@ -183,8 +428,61 @@ function renderMain(){
   document.getElementById('logoutBtn').onclick = logout;
   document.getElementById('project').onchange = updatePhases;
   document.getElementById('addBtn').onclick = addEntry;
+  document.getElementById('exportCsv').onclick = exportCSV;
+  document.getElementById('exportXls').onclick = exportXLS;
+  document.getElementById('exportJson').onclick = exportJSON;
   updatePhases();
   renderTable();
+}
+
+function downloadFile(filename, content, mimeType){
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function buildHeaders(){
+  return ['Semaine', 'Projet', 'Phase', 'Heures', 'Commentaire'];
+}
+
+function buildRows(){
+  return [...entries]
+    .sort((a,b) => b.week.localeCompare(a.week))
+    .map(e => [e.week, e.project, e.phase, e.hours, e.comment || '']);
+}
+
+function exportCSV(){
+  if(entries.length === 0) return;
+  const headers = buildHeaders();
+  const rows = buildRows();
+  const escape = v => `"${String(v).replace(/"/g,'""')}"`;
+  const csv = [headers, ...rows].map(r => r.map(escape).join(';')).join('\n');
+  downloadFile(`suivi-temps_${currentUser}.csv`, '\uFEFF' + csv, 'text/csv;charset=utf-8;');
+}
+
+function exportXLS(){
+  if(entries.length === 0) return;
+  const headers = buildHeaders();
+  const rows = buildRows();
+  const tableRows = [headers, ...rows]
+    .map(r => '<tr>' + r.map(c => `<td>${String(c)}</td>`).join('') + '</tr>')
+    .join('');
+  const html = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+    <head><meta charset="UTF-8"></head>
+    <body><table>${tableRows}</table></body></html>`;
+  downloadFile(`suivi-temps_${currentUser}.xls`, html, 'application/vnd.ms-excel');
+}
+
+function exportJSON(){
+  if(entries.length === 0) return;
+  downloadFile(`suivi-temps_${currentUser}.json`, JSON.stringify(entries, null, 2), 'application/json');
 }
 
 function updatePhases(){
@@ -237,10 +535,13 @@ function deleteEntry(id){
 
 function renderTable(){
   const zone = document.getElementById('tableZone');
+  const exportBtns = ['exportCsv','exportXls','exportJson'].map(id => document.getElementById(id));
   if(entries.length === 0){
     zone.innerHTML = `<div class="empty">Aucune saisie enregistrée pour le moment.</div>`;
+    exportBtns.forEach(b => { if(b) b.disabled = true; b.style.opacity = '.5'; });
     return;
   }
+  exportBtns.forEach(b => { if(b) b.disabled = false; b.style.opacity = '1'; });
   const sorted = [...entries].sort((a,b) => b.week.localeCompare(a.week));
   const total = entries.reduce((s,e)=>s+e.hours,0);
   zone.innerHTML = `
@@ -274,6 +575,7 @@ function init(){
 }
 
 renderLogin();
-</script>
+    </script>
 </body>
+
 </html>
