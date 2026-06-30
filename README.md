@@ -8,7 +8,8 @@ Application web permettant à un utilisateur authentifié de saisir et consulter
 - Saisie du temps passé pour une semaine, un projet et une phase donnés
 - Sauvegarde automatique des saisies
 - Consultation de l'historique des temps saisis, avec total d'heures
-- Export de l'historique en CSV, Excel et JSON
+- Filtrage de l'historique par projet
+- Export de l'historique (filtré) en CSV, Excel et JSON
 - Suppression d'une saisie
 
 ## Stack technique

@@ -2,6 +2,11 @@
 
 Toutes les évolutions notables de ce projet sont documentées dans ce fichier.
 
+## [1.3.0] - 2026-06-30
+### Ajouté
+- Filtre par projet sur le tableau de consultation
+- Les exports CSV/Excel/JSON respectent désormais le filtre actif
+
 ## [1.2.0] - 2026-06-30
 ### Ajouté
 - Export de l'historique des temps saisis en CSV, Excel (.xls) et JSON
