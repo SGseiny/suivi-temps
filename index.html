@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Suivi des temps</title>
+<style>
+  :root{
+    --bg:#f4f6f8; --card:#ffffff; --primary:#2c5f6f; --primary-dark:#1f4750;
+    --accent:#e8b94a; --text:#243036; --muted:#6b7c85; --border:#e1e7ea;
+    --danger:#c0504d; --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--bg); color:var(--text); min-height:100vh;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:32px 20px;}
+  h1{font-size:1.5rem;margin:0 0 4px;color:var(--primary-dark);}
+  .subtitle{color:var(--muted);font-size:.9rem;margin-bottom:24px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:6px;font-weight:600;}
+  input,select{
+    width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;
+    font-size:.95rem;margin-bottom:16px;background:#fff;color:var(--text);
+  }
+  input:focus,select:focus{outline:none;border-color:var(--primary);}
+  button{
+    background:var(--primary);color:#fff;border:none;padding:11px 22px;border-radius:8px;
+    font-size:.95rem;font-weight:600;cursor:pointer;transition:background .15s;
+  }
+  button:hover{background:var(--primary-dark);}
+  button.secondary{background:transparent;color:var(--primary);border:1px solid var(--primary);}
+  button.secondary:hover{background:#eef4f5;}
+  .row{display:flex;gap:16px;}
+  .row > div{flex:1;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+  .userpill{background:var(--primary);color:#fff;padding:6px 14px;border-radius:20px;font-size:.85rem;}
+  table{width:100%;border-collapse:collapse;font-size:.9rem;}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--border);}
+  th{color:var(--muted);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.03em;}
+  tr:hover td{background:#fafcfc;}
+  .empty{color:var(--muted);text-align:center;padding:24px;font-size:.9rem;}
+  .total{margin-top:14px;text-align:right;font-weight:700;color:var(--primary-dark);}
+  .error{color:var(--danger);font-size:.85rem;margin:-10px 0 14px;}
+  .login-box{max-width:380px;margin:80px auto 0;}
+  .login-box h1{text-align:center;}
+  .login-box .subtitle{text-align:center;}
+  .del-btn{background:none;border:none;color:var(--danger);cursor:pointer;font-size:.85rem;padding:2px 6px;}
+  .del-btn:hover{text-decoration:underline;}
+  .section-title{font-size:1.05rem;font-weight:700;margin:0 0 16px;color:var(--primary-dark);}
+  footer{text-align:center;color:var(--muted);font-size:.75rem;margin-top:30px;}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+// ---------- Données codées en dur ----------
+const USERS = {
+  "asali": { password: "alt2026", label: "Sali A." },
+  "jdupont": { password: "alt2026", label: "J. Dupont" }
+};
+
+const PROJECTS = {
+  "Projet Atlas": ["Cadrage", "Conception", "Développement", "Tests", "Recette"],
+  "Projet Mercure": ["Analyse besoins", "Développement", "Déploiement"],
+  "Projet Helios": ["Conception", "Développement", "Documentation", "Support"]
+};
+
+let currentUser = null;
+let entries = [];
+
+const app = document.getElementById('app');
+
+function storageKey(user){ return `time_entries_${user}`; }
+
+function loadEntries(user){
+  try{
+    const raw = localStorage.getItem(storageKey(user));
+    return raw ? JSON.parse(raw) : [];
+  }catch(e){
+    return [];
+  }
+}
+
+function saveEntries(user, data){
+  try{
+    localStorage.setItem(storageKey(user), JSON.stringify(data));
+    return true;
+  }catch(e){
+    console.error('Erreur de sauvegarde', e);
+    return false;
+  }
+}
+
+function renderLogin(error){
+  app.innerHTML = `
+    <div class="login-box card">
+      <h1>Suivi des temps</h1>
+      <div class="subtitle">Connectez-vous pour saisir vos heures</div>
+      ${error ? `<div class="error">${error}</div>` : ''}
+      <label for="u">Identifiant</label>
+      <input id="u" type="text" autocomplete="username" placeholder="ex: asali">
+      <label for="p">Mot de passe</label>
+      <input id="p" type="password" autocomplete="current-password" placeholder="••••••••">
+      <button id="loginBtn" style="width:100%">Se connecter</button>
+    </div>
+    <footer>Suivi des temps — démo technique</footer>
+  `;
+  document.getElementById('loginBtn').onclick = doLogin;
+  document.getElementById('p').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+}
+
+function doLogin(){
+  const u = document.getElementById('u').value.trim();
+  const p = document.getElementById('p').value;
+  const user = USERS[u];
+  if(user && user.password === p){
+    currentUser = u;
+    init();
+  } else {
+    renderLogin("Identifiant ou mot de passe incorrect.");
+  }
+}
+
+function logout(){
+  currentUser = null;
+  entries = [];
+  renderLogin();
+}
+
+function renderMain(){
+  const projectNames = Object.keys(PROJECTS);
+  app.innerHTML = `
+    <div class="topbar">
+      <div>
+        <h1 style="margin-bottom:0">Suivi des temps</h1>
+        <div class="subtitle">${USERS[currentUser].label}</div>
+      </div>
+      <div>
+        <span class="userpill">${currentUser}</span>
+        <button class="secondary" id="logoutBtn" style="margin-left:10px">Déconnexion</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Nouvelle saisie</div>
+      <div id="formError" class="error" style="display:none"></div>
+      <div class="row">
+        <div>
+          <label for="week">Semaine concernée</label>
+          <input type="week" id="week">
+        </div>
+        <div>
+          <label for="project">Projet</label>
+          <select id="project">
+            ${projectNames.map(p=>`<option value="${p}">${p}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="phase">Phase</label>
+          <select id="phase"></select>
+        </div>
+        <div>
+          <label for="hours">Heures passées</label>
+          <input type="number" id="hours" min="0.5" step="0.5" placeholder="ex: 7.5">
+        </div>
+      </div>
+      <label for="comment">Commentaire (optionnel)</label>
+      <input type="text" id="comment" placeholder="Détail de l'activité...">
+      <button id="addBtn">Enregistrer la saisie</button>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Mes temps saisis</div>
+      <div id="tableZone"></div>
+    </div>
+    <footer>Données stockées localement dans ce navigateur (localStorage)</footer>
+  `;
+
+  document.getElementById('logoutBtn').onclick = logout;
+  document.getElementById('project').onchange = updatePhases;
+  document.getElementById('addBtn').onclick = addEntry;
+  updatePhases();
+  renderTable();
+}
+
+function updatePhases(){
+  const project = document.getElementById('project').value;
+  const phaseSelect = document.getElementById('phase');
+  phaseSelect.innerHTML = PROJECTS[project].map(ph=>`<option value="${ph}">${ph}</option>`).join('');
+}
+
+function showFormError(msg){
+  const el = document.getElementById('formError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function addEntry(){
+  const week = document.getElementById('week').value;
+  const project = document.getElementById('project').value;
+  const phase = document.getElementById('phase').value;
+  const hours = parseFloat(document.getElementById('hours').value);
+  const comment = document.getElementById('comment').value.trim();
+  const errEl = document.getElementById('formError');
+  errEl.style.display = 'none';
+
+  if(!week){ showFormError("Merci de sélectionner une semaine."); return; }
+  if(!hours || hours <= 0){ showFormError("Merci de saisir un nombre d'heures valide."); return; }
+
+  entries.push({
+    id: Date.now().toString(36),
+    week, project, phase, hours, comment,
+    savedAt: new Date().toISOString()
+  });
+
+  const ok = saveEntries(currentUser, entries);
+  if(!ok){
+    showFormError("Erreur lors de la sauvegarde, merci de réessayer.");
+    entries.pop();
+    return;
+  }
+
+  document.getElementById('hours').value = '';
+  document.getElementById('comment').value = '';
+  renderTable();
+}
+
+function deleteEntry(id){
+  entries = entries.filter(e => e.id !== id);
+  saveEntries(currentUser, entries);
+  renderTable();
+}
+
+function renderTable(){
+  const zone = document.getElementById('tableZone');
+  if(entries.length === 0){
+    zone.innerHTML = `<div class="empty">Aucune saisie enregistrée pour le moment.</div>`;
+    return;
+  }
+  const sorted = [...entries].sort((a,b) => b.week.localeCompare(a.week));
+  const total = entries.reduce((s,e)=>s+e.hours,0);
+  zone.innerHTML = `
+    <table>
+      <thead>
+        <tr><th>Semaine</th><th>Projet</th><th>Phase</th><th>Heures</th><th>Commentaire</th><th></th></tr>
+      </thead>
+      <tbody>
+        ${sorted.map(e => `
+          <tr>
+            <td>${e.week}</td>
+            <td>${e.project}</td>
+            <td>${e.phase}</td>
+            <td>${e.hours} h</td>
+            <td>${e.comment || '—'}</td>
+            <td><button class="del-btn" data-id="${e.id}">Supprimer</button></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    <div class="total">Total : ${total} h</div>
+  `;
+  zone.querySelectorAll('.del-btn').forEach(b => {
+    b.onclick = () => deleteEntry(b.dataset.id);
+  });
+}
+
+function init(){
+  entries = loadEntries(currentUser);
+  renderMain();
+}
+
+renderLogin();
+</script>
+</body>
+</html>
